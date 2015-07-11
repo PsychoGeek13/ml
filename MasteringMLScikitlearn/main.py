@@ -22,8 +22,85 @@ def SDGRegressionExample():
     regressor.fit_transform(X_train, y_train)
     print 'Test set r-squared score', regressor.score(X_test, y_test)
 
+def categoricalFeatures():
+    from sklearn.feature_extraction import DictVectorizer
+    onehot_encoder= DictVectorizer()
+    instances=[
+        {'city':'New York'},
+        {'city':'San Francisco'},
+        {'city': 'Chapel Hill'}
+    ]
+    print onehot_encoder.fit_transform(instances).toarray()
+
+def lemmatize(token, tag):
+    from nltk.stem.wordnet import WordNetLemmatizer
+    lemmatizer = WordNetLemmatizer()
+    if tag[0].lower() in ['n', 'v']:
+        return lemmatizer.lemmatize(token, tag[0].lower())
+    return token
+
+def bagOfWordsModel():
+    #simple vectorization example
+    from sklearn.feature_extraction.text import CountVectorizer
+    corpus = [
+        'UNC played Duke in basketball',
+        'Duke lost the basketball game',
+        'I ate a sandwich'
+    ]
+    vectorizer = CountVectorizer()
+    print vectorizer.fit_transform(corpus).todense()
+    print vectorizer.vocabulary_
+    #viewing the euclidean distance between features vectors
+    from sklearn.metrics.pairwise import   euclidean_distances
+    counts = [[0, 1, 1, 0, 0, 1, 0, 1],[0, 1, 1, 1, 1, 0, 0, 0],[1, 0, 0, 0, 0, 0, 1, 0]]
+    print ('Distances between 1st and 2nd documents:',euclidean_distances(counts[0],counts[1]))
+    print ('Distances between 1st and 3rd documents:',euclidean_distances(counts[0],counts[2]))
+    print ('Distances between 2nd and 3rd documents:',euclidean_distances(counts[1],counts[2]))
+    #filtering stop words
+    vectorizer = CountVectorizer(stop_words='english')
+    print vectorizer.fit_transform(corpus).todense()
+    print vectorizer.vocabulary_
+    # stemming and lemmatization
+    """stemming =  removes all patterns of characters that appear to be affixes,resulting in a token that is not necessarily a valid word.  and lemmatization = finding the roots of a word ex jumping becomes jump
+     Lemmatization frequently
+    requires a lexical resource, like WordNet, and the word's part of speech. Stemming
+    algorithms frequently use rules instead of lexical resources to produce stems and can
+    operate on any token, even without its context.
+
+    stem mesh hayfara2 been gathering as a noun and gathering as a verb w hay2lebhom homma el etneen le gather
+    lemmatization bey7tag el context 3ashan yeraga3 el verbs lel root w el nouns zay ma heya
+    stemming uses rules to remove characters that appear as zyadat fa momken yebawaz kelma ex: was>= wa, lemmatization uses el context
+    """
+    from nltk import word_tokenize
+    from nltk.stem import PorterStemmer
+    from nltk.stem.wordnet import WordNetLemmatizer
+    from nltk import pos_tag
+    wordnet_tags = ['n','v']
+
+    corpus = [
+ 'He ate the sandwiches',
+ 'Every sandwich was eaten by him'
+ ]
+    stemmer = PorterStemmer()
+    print 'Stemmed:', [[stemmer.stem(token) for token in word_tokenize(document)] for document in corpus]
+
+    lemmatizer = WordNetLemmatizer()
+    tagged_corpus = [pos_tag(word_tokenize(document)) for document in corpus]
+    print 'Lemmatized:', [[lemmatize(token, tag) for token, tag in
+                           document] for document in tagged_corpus]
+
+
+    #TF-IDF => the frequencies of the tokens are put into considerations
+    from sklearn.feature_extraction.text import  CountVectorizer
+    corpus = ['The dog ate a sandwich, the wizard transfigured a sandwich, and I ate a sandwich']
+    vectorizer = CountVectorizer(stop_words='english')
+    """The binary argument is defaulted to False,so instead of a binary representation
+     we get a number of occurences for each token"""
+    print vectorizer.fit_transform(corpus).todense()
+
 if __name__ == '__main__':
-    SDGRegressionExample()
+    bagOfWordsModel()
+    #SDGRegressionExample()
     #if len(sys.argv) != 3:
         #print('usage: knapsack.py [the Path to the file containing the tasks ] [max allowed number of Days]')
         #sys.exit(1)

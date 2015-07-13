@@ -98,8 +98,40 @@ def bagOfWordsModel():
      we get a number of occurences for each token"""
     print vectorizer.fit_transform(corpus).todense()
 
+
+def LogisticRegressionSMSFilteringExample():
+    import numpy as np
+    import pandas as pd
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.linear_model.logistic import LogisticRegression
+    from sklearn.cross_validation import train_test_split, cross_val_score
+    df = pd.read_csv('C:/Users/Ahmad/Documents/Mastering ML with Scikitlearn/ml/DataSets/smsspamcollection/SMSSpamCollection', delimiter='\t',header=None)
+    X_train_raw, X_test_raw, y_train, y_test = train_test_split(df[1],df[0])
+    vectorizer = TfidfVectorizer()
+    X_train = vectorizer.fit_transform(X_train_raw)
+    X_test = vectorizer.transform(X_test_raw)
+
+    classifier = LogisticRegression()
+    classifier.fit(X_train, y_train)
+    predictions = classifier.predict(X_test)
+
+    for i in xrange(0,5):
+        print X_test_raw.values.tolist()[i],"\r\n Classification: ", predictions[i]
+    #for i, prediction in enumerate(predictions[:5]):
+     #   print 'Prediction: %s. Message: %s' % (prediction, X_test_raw[i])
+
+
+def kaggleTitanic():
+    import pandas as pd
+    from sklearn.linear_model.logistic import LogisticRegression
+    from sklearn.cross_validation import train_test_split, cross_val_score
+    df = pd.read_csv('C:/Users/Ahmad/Documents/Mastering ML with Scikitlearn/ml/DataSets/Titanic/train.csv', delimiter='\t',header=None)
+    #X_train_raw, X_test_raw, y_train, y_test = train_test_split(df[1],df[0])
+    features=df.drop(['Survived','PassengerId','Name'], axis=1)
+
+
 if __name__ == '__main__':
-    bagOfWordsModel()
+    LogisticRegressionSMSFilteringExample()
     #SDGRegressionExample()
     #if len(sys.argv) != 3:
         #print('usage: knapsack.py [the Path to the file containing the tasks ] [max allowed number of Days]')
